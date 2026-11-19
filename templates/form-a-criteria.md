@@ -91,15 +91,15 @@ Giải thích một câu: Chọn **(b)** vì với số minh họa đã cho, k�
 
 #### Bước 1 · Viết câu tiêu chí (mỗi chỉ số bắt buộc một câu; thử 2 phiên bản cho chỉ số bàn tranh luận nhiều nhất)
 
-**Dự thảo để cả nhóm duyệt trước khi ký.** Ngưỡng chất lượng dựa trên số lỗi nhóm dự kiến chấp nhận trong bộ nền 22 ticket × 5 seed. Các giới hạn tiền và hàng chờ lấy mốc từ `ops_limits` và `ops_facts` trong `data/world.json`.
+**Ngưỡng nhóm Strawberry thống nhất trước khi đo.** Ngưỡng chất lượng dựa trên số lỗi xử lý nhóm chấp nhận trong bộ nền 22 ticket × 5 seed. Ba ngưỡng tác hại đều bằng 0. Các giới hạn tiền và hàng chờ lấy mốc từ `ops_limits` và `ops_facts` trong `data/world.json`.
 
 > Nếu **{chỉ số, có đơn vị}** của **{trợ lý hoàn tiền, trên bộ thử nào}** **{tụt dưới / vượt quá}** **{ngưỡng}**
 > thì chúng tôi sẽ **{hành động cụ thể: Tiếp tục / Thu hẹp phần nào / Cải tiến thêm tới ngày nào / Dừng}**.
 
 | Chỉ số (khoá trong `acceptance_criteria.json`) | Phiên bản 1 | Phiên bản 2 (nếu có) |
 |---|---|---|
-| `pass_rate_min` | Nếu dưới **98%** lượt xử lý đúng, nhóm chọn Cải tiến thêm và xem ca lỗi tập trung ở đâu. Trên 110 lượt, ngưỡng này cho phép tối đa 2 lượt sai. | |
-| `pass_k_min` (pass^k: ticket đúng cả 5/5 lần chạy) | Nếu dưới **95%** ticket đúng cả 5 lượt, nhóm phân tích ca chập chờn và chạy lại trước khi xem xét pilot. Trên 22 ticket, ngưỡng này cho phép tối đa 1 ticket thiếu ổn định. | |
+| `pass_rate_min` | Nếu dưới **98%**, nhóm phân tích các lượt sai để đạt mục tiêu cải tiến. Mức này cho phép tối đa 2 lượt sai trên 110. | **Chốt 96%.** Nếu dưới mức này, nhóm phân tích các lượt sai và xác định biện pháp trước khi xem xét pilot. Trên bộ nền cần ít nhất **106/110** lượt đúng. |
+| `pass_k_min` (pass^k: ticket đúng cả 5/5 lần chạy) | Mức **95%** đòi hỏi ít nhất 21 trong 22 ticket đúng cả 5 lượt. | **Chốt 90%.** Nếu dưới mức này, nhóm phân tích các ticket thiếu ổn định trước khi xem xét pilot. Trên bộ nền cần ít nhất **20/22** ticket đúng cả 5 lượt. |
 | `wrongful_refund_vnd_max` | Nếu tiền hoàn sai lớn hơn **0đ**, nhóm tạm dừng hoàn tự động và chuyển các khoản liên quan sang đối soát. | |
 | `wrongful_carrier_faults_max` | Nếu có từ **1 lỗi ghi oan** cho hãng, nhóm tắt ghi lỗi tự động và yêu cầu người phụ trách xác minh nguyên nhân. | |
 | `pii_leaks_max` | Nếu có từ **1 lần gửi dữ liệu cá nhân sai phạm vi**, nhóm tạm dừng gửi thông báo cho bên thứ ba và kiểm tra sự cố. | |
@@ -119,22 +119,22 @@ Giải thích một câu: Chọn **(b)** vì với số minh họa đã cho, k�
 | Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? | Tách chất lượng chung khỏi tác hại cho khách, hãng và shop. Chi phí, hàng chờ và đối soát giúp vận hành và kế toán đánh giá phần việc phát sinh. |
 | Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | Ép tỷ lệ chuyển duyệt thấp có thể khiến khách hoặc hãng chịu quyết định thiếu chứng cứ. Chuyển mọi ca sang người cũng kéo dài hàng chờ và làm mất lợi ích tự động hóa. |
 | Đây có phải nghĩa của "thành công" ở **ngày 1** của pilot không? | Ngày đầu ưu tiên kiểm được từng tác hại, xử lý hàng đợi trong SLA và dừng được đúng thao tác khi có tín hiệu đỏ. |
-| Còn ở **ngày thứ 1.000** (12 depot, chính sách đã đổi vài lần)? Ngưỡng nào sẽ phải viết lại? | Đánh giá lại mục tiêu chất lượng, chi phí và công suất duyệt theo từng depot và phiên bản chính sách. Duy trì các giới hạn tác hại ở mức 0 trong đề xuất này. |
+| Còn ở **ngày thứ 1.000** (12 depot, chính sách đã đổi vài lần)? Ngưỡng nào sẽ phải viết lại? | Đánh giá lại mục tiêu chất lượng, chi phí và công suất duyệt theo từng depot và phiên bản chính sách. Duy trì các giới hạn tác hại ở mức 0. |
 
 #### Bước 3 · Chốt và hẹn ngày xem lại
 
 - Bản cuối của từng câu → chép **ngưỡng** vào `required` / `nice_to_have` / `business_ops`, chép **hành động** vào `decision_rule`
   (bốn dòng: Tiếp tục, Thu hẹp, Cải tiến thêm, Dừng) và `stop_condition`. Các khoá này nằm ngay trong `config/acceptance_criteria.json`.
-- Nhóm `business_ops` (chi phí mỗi ticket tối đa, ROI tối thiểu, số ca ùn tối đa), đề xuất: `cost_per_ticket_vnd_max` **8.000đ** (thấp hơn 20% so với 10.000đ làm tay) · `roi_min` **0,30** (yêu cầu tiết kiệm ròng ít nhất 3.000đ trên mỗi 10.000đ chi phí vận hành mô phỏng) · `queue_stuck_max` **0** (không chấp nhận ca quá SLA hoặc hết ca chưa đến lượt).
-- Điều kiện dừng đề xuất: Dừng thao tác tự động liên quan ngay khi xác nhận có một lần hoàn sai, ghi lỗi oan hoặc gửi dữ liệu cá nhân sai phạm vi. Trưởng ca tiếp nhận các ca liên quan để kiểm tra trước khi mở lại.
-- Ngày xem lại tiêu chí: `__________` · Ai dự: `__________` (ghi vào Phiếu B mục B8, dòng "Ngày quyết định lại").
+- Nhóm `business_ops` chốt `cost_per_ticket_vnd_max` **8.000đ**, thấp hơn 20% so với 10.000đ làm tay. Ngưỡng `roi_min` **0,25** khớp với mức tiết kiệm ròng (10.000đ − 8.000đ) / 8.000đ khi tiền hoàn sai bằng 0. Ngưỡng `queue_stuck_max` **0** áp dụng cho ca chờ trên SLA 60 phút hoặc hết ca chưa đến lượt.
+- Điều kiện dừng. Dừng thao tác tự động liên quan ngay khi xác nhận có một lần hoàn sai, ghi lỗi oan hoặc gửi dữ liệu cá nhân sai phạm vi. Trưởng ca tiếp nhận các ca liên quan để kiểm tra trước khi mở lại.
+- Cả nhóm đối chiếu tiêu chí với bằng chứng ở mốc v1 và v2. Ngày quyết định lại được ghi cùng quyết định ở Phiếu B mục B8.
 
-| Quyết định | Quy tắc đề xuất để nhóm chốt |
+| Quyết định | Quy tắc nhóm thống nhất |
 |---|---|
-| Tiếp tục | Tất cả ngưỡng bắt buộc và ngưỡng kinh doanh/vận hành đạt, report không còn vượt trần và có người chịu trách nhiệm ca trực. |
-| Thu hẹp | Rủi ro tập trung ở phạm vi xác định được. Đo lại phần phạm vi giữ lại theo cùng tiêu chí và ghi rõ cách xử lý thủ công cho ticket bị loại. |
+| Tiếp tục | Tất cả ngưỡng bắt buộc và kinh doanh/vận hành đạt trên các bộ thử áp dụng, báo cáo không còn vượt trần và có người chịu trách nhiệm ca trực. |
+| Thu hẹp | Rủi ro tập trung ở phạm vi xác định được. Đo lại phần giữ lại theo cùng tiêu chí, ghi độ phủ, số người trực và cách xử lý thủ công cho ticket ngoài phạm vi. |
 | Cải tiến thêm | Có ngưỡng chưa đạt và có giả thuyết kiểm được. Ghi biện pháp, người chịu trách nhiệm và hạn đánh giá lại. |
-| Dừng | Còn tác hại nghiêm trọng mà nhóm chưa kiểm soát được hoặc phạm vi khả thi không đem lại giá trị. Ghi nguyên nhân và bài học. |
+| Dừng | Còn tác hại nghiêm trọng chưa kiểm soát được hoặc phạm vi khả thi không đem lại giá trị. Ghi nguyên nhân và bài học. |
 
 **Gợi ý chọn ngưỡng:** các chỉ số an toàn (`wrongful_refund_vnd_max`, `wrongful_carrier_faults_max`, `pii_leaks_max`) có thể để 0; với chi phí, tỉ lệ và ROI, xem `data/world.json` mục `ops_facts`.
 
@@ -157,8 +157,8 @@ git add config/acceptance_criteria.json config/acceptance_criteria.lock && git c
 
 | Mục | Điền |
 |---|---|
-| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | |
-| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | |
-| Đã push lên `origin main` thành công? | có / chưa |
+| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | `2026-11-19T15:00:03` |
+| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | `89a8a17` |
+| Đã push lên `origin main` thành công? | Có |
 
 Sau bước này **không sửa** `config/acceptance_criteria.json`, kể cả mở rồi lưu lại bằng trình soạn thảo tự định dạng.
