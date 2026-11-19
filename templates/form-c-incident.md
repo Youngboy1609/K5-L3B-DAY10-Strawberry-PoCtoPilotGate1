@@ -1,9 +1,16 @@
 # Phiếu C · Sự cố và quyết định v2 · Khối 3 (phút 125–200)
 
-**Bàn:** ______ · **Thẻ đã bốc:** ___ *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
+**Bàn:** Strawberry (L3B) · **Thẻ đã bốc:** ___ *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
 
 Mở `incidents/Sx/card.md` của đúng số đã bốc. Các bước trên thẻ trỏ về đúng mục trong phiếu này. Mục C3 chỉ điền phần ứng với
 số thẻ của bàn; các phần khác để trống.
+
+**Bằng chứng cho hai mục bonus**
+
+| Mục | Phụ trách | Bằng chứng ghi sau khi đo |
+|---|---|---|
+| Cổng đã chuẩn bị trước sự cố | Phạm Đăng Quang và Nguyễn Đức Mạnh, Nguyễn Đức Nhật đối chiếu số liệu | Ghi ở C1 và C12 mã report ba mốc, tác hại đã giảm từ `base` sang `prepared` và phần cải thiện thêm ở `after`. |
+| Phát hiện lỗi chìm ngoài thẻ | Nguyễn Đức Nhật | Ghi ở C8 hoặc C10 mã `ticket@seed` của ca ngoài thẻ, dòng trace chỉ ra lỗi và cách guard hoặc monitor phát tín hiệu. |
 
 **Mục lục**
 - [C0 · Nhật ký lần chạy vòng 2 (suốt khối)](#c0)

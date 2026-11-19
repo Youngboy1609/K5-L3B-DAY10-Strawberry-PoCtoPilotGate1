@@ -1,6 +1,6 @@
 # Phiếu B · Đo, rủi ro, cổng vòng 1 và quyết định v1 · Khối 2A + 2B + chốt (phút 65–115)
 
-**Bàn:** ______
+**Bàn:** Strawberry (L3B)
 
 Tiêu chí đã ký ở Phiếu A. Từ phút 65 bàn mới được chạy trợ lý. Khối 2A (65–85) chưa sửa code hay config. Khối 2B (85–105) sửa
 `lab10/guards.py` và `config/operating_gates.json`. Phút 105–115 chốt cổng vòng 1 rồi viết quyết định v1. Sau phút 115 không sửa phiếu này
@@ -120,24 +120,22 @@ Gợi ý: mở `data/world.json` phần `policies`, `orders[].parcels`, `ops_lim
 
 | Mục | Điền cho trợ lý hoàn tiền |
 |---|---|
-| Người dùng | |
-| Việc người dùng cần làm xong | |
-| Đầu ra của hệ thống (kể cả các lệnh ghi) | |
-| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | |
-| Trường then chốt quyết định tiền và lỗi hãng | |
-| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | |
-| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | |
-| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | |
-| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | |
+| Người dùng | Khách yêu cầu hoàn phí giao trễ và nhân viên CSKH duyệt ca cần chứng cứ bổ sung. Kế toán, shop và hãng dùng hoặc chịu tác động của kết quả. |
+| Việc người dùng cần làm xong | Xác minh đúng đơn, nhận quyết định rõ ràng và đối soát được khoản đã ghi. |
+| Đầu ra của hệ thống (kể cả các lệnh ghi) | Hoàn phí, từ chối, trả lời hoặc chuyển người. Bốn thao tác ghi là `issue_refund`, `file_carrier_fault`, `notify_carrier` và `send_reply`. |
+| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | Ticket chứa yêu cầu. `orders[].parcels` chứa tracking, `policies` chứa quy tắc, `approvals` chứa phê duyệt. Sổ cái ghi khoản đã hoàn. |
+| Trường then chốt quyết định tiền và lỗi hãng | `promised_date`, `delivered_date`, `delay_cause`, ngày hiệu lực chính sách, `shipping_fee_vnd`, `auto_limit_vnd`, khoản đã ghi và phê duyệt gắn với đơn. |
+| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | Dùng tracking cho dữ kiện giao hàng, lịch hiệu lực từ chính sách và sổ cái cho khoản thực ghi. Ngày trễ do khách khai, cờ `refund_status` cập nhật theo lô đêm và `index_active` là các tín hiệu cần đối chiếu lại. |
+| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | Ngày dạng ISO. Kiện chưa giao có thể thiếu `delivered_date`. Đơn nhiều kiện cần giữ đúng liên kết kiện–hãng. Nguyên nhân trống cần xác minh trước khi quy trách nhiệm. |
+| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | Điểm giao có thể cập nhật tracking muộn, chính sách đổi trước khi chỉ mục cập nhật và lượng yêu cầu có thể dồn vào một ca. |
+| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | Dùng ngày hẹn và ngày giao của kiện trên tracking. Với kiện chưa giao, tính đến ngày đánh giá và lưu ngày dùng để đối soát. |
 
 **Tóm lại (điền vào chỗ trống):**
-Trợ lý dùng `__________`, `__________`, `__________` để giúp `__________` làm được `__________`.
-Trường mà nếu sai thì tiền hoặc lỗi hãng sai theo: `__________`, `__________`.
-Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: `__________`. Dấu hiệu nhìn thấy sớm nhất: `__________`.
+Trợ lý dùng tracking, phiên bản chính sách và sổ hoàn tiền để giúp khách được xử lý đúng yêu cầu giao trễ.
+Ngày giao, nguyên nhân trễ và phiên bản chính sách chi phối việc hoàn tiền và xác định lỗi hãng.
+Dấu hiệu sớm khi đổi chính sách là `policy_id` được dùng lệch phiên bản có hiệu lực tại ngày đánh giá.
 
-**Ví dụ drift trong 3 tháng tới** (lấy từ dòng "thế giới thật làm dữ liệu lệch"): cái gì đổi `____` · đổi ngày nào `____` ·
-trường nào cho thấy `____` · con số nào của Bản tiêu chí bị ảnh hưởng `____`.
-Đây là đầu vào đổi hay quan hệ vào–ra đổi? Chỉ số nào sẽ phát hiện? `__________`
+**Ví dụ drift trong 3 tháng tới.** Chính sách mô phỏng chuyển từ `REFUND-v3` sang `REFUND-v4` ngày **01/12/2026**. Giới hạn tự động giảm từ 200.000đ xuống 100.000đ, và nguyên nhân bất khả kháng không còn thuộc nhóm được ghi lỗi hãng. Dấu hiệu là ngày hiệu lực đã đổi mà trace vẫn chọn v3. Đây là thay đổi quan hệ vào–ra: cùng dữ kiện tracking có thể dẫn tới xử lý khác. Metric chọn đúng phiên bản ở A2 phát hiện sớm, còn số tiền hoàn sai và số lỗi hãng oan đo tác hại. Nguồn: `policies` trong `data/world.json`.
 
 **Ví dụ một dòng (đừng chép):** trường then chốt `parcels[].delivered_date` · bản ghi do máy quét ở điểm phát tạo ra, là nguồn
 sự thật về ngày giao · lệch khi điểm phát quét sót hoặc nhập bù bằng tay.
@@ -165,13 +163,13 @@ mà cả bàn chưa nghĩ tới, không phải tả lại nhánh đã biết.
 **Câu hỏi dẫn dắt:** tool nào tạo ra hậu quả không đảo ngược? Mỗi tham số của tool đó lấy từ đâu (ticket, DB, model tự suy)?
 Với mỗi guideword: hậu quả cho ai, hiện có gì ngăn, cần thêm gate ở tầng nào (phát hiện / chặn / giới hạn thiệt hại)?
 
-Tool chọn phân tích: `________________` (gợi ý: `issue_refund`, `file_carrier_fault`, `notify_carrier`)
+Tool chọn phân tích: `file_carrier_fault`. Các tình huống dưới đây là giả thuyết từ luồng ghi và dữ liệu mô phỏng để nhóm đối chiếu với trace sau khi ký.
 
 | Tham số / dòng dữ liệu | Guideword | Lệch cụ thể (viết bằng dữ kiện của lab) | Hậu quả, cho ai | Hiện có gì ngăn? | Gate đề xuất + tầng |
 |---|---|---|---|---|---|
-| | WRONG | | | | |
-| | INVALID | | | | |
-| | INCOMPLETE | | | | |
+| `parcel_id` và `carrier_id` | WRONG | Đơn nhiều kiện, kiện trễ nhất thuộc hãng khác với kiện đang được khiếu nại. | Hãng hoặc tài xế của kiện khác bị ghi lỗi. | Luồng hiện tại có dữ liệu tracking theo kiện. | Đối chiếu đúng liên kết đơn–kiện–hãng trước khi ghi. Nếu ticket không xác định được kiện, chuyển xác minh. Tầng chặn. |
+| Phiên bản chính sách | INVALID | Sau ngày đổi chính sách, cờ `index_active` vẫn trỏ v3 và nguyên nhân bất khả kháng được diễn giải theo luật cũ. | Hãng bị ghi lỗi theo chính sách hết hiệu lực. | Danh mục có ngày hiệu lực. Tool có kiểm tra nguyên nhân theo bản hiệu lực khi bật cổng pháp lý. | Dùng phiên bản theo ngày hiệu lực khi xác minh ghi lỗi. Tầng chặn. |
+| `delay_cause` | INCOMPLETE | Tracking có độ trễ nhưng trống nguyên nhân, agent suy diễn nguyên nhân do hãng. | Hãng nhận bản ghi thiếu căn cứ, kế toán mất thời gian xử lý khiếu nại. | Trace có cờ `cause_recorded`. Config có tùy chọn yêu cầu nguyên nhân đã ghi. | Bật kiểm tra nguyên nhân tracking theo chính sách. Ghi lý do giữ lại ca cần xác minh. Tầng chặn và vận hành. |
 | | PERTURBED | | | | |
 | | INCAPABLE | | | | |
 
@@ -188,8 +186,8 @@ Không bắt buộc điền đủ năm dòng. Bắt buộc: **ít nhất ba dòn
 
 | Thành phần | Guideword | Lệch cụ thể | Hậu quả, cho ai | Cổng đề xuất: code hay con số nào trong `config/operating_gates.json` |
 |---|---|---|---|---|
-| | | | | |
-| | | | | |
+| Người duyệt | INCAPABLE | Những ca thiếu căn cứ được chuyển cùng lúc và vượt công suất 6 ca/giờ của một người trong mô phỏng. | Khách chờ, trưởng ca phải xử lý dồn, dễ vượt SLA 60 phút. | Kiểm hàng chờ theo giờ và cấu hình `operations.review_capacity_per_hour` cùng quy trình gọi hỗ trợ. |
+| Bên thứ ba | INCOMPLETE | Báo cáo lỗi chỉ có mã đơn, thiếu mã kiện hoặc căn cứ tracking để hãng đối soát. | Hãng không thể xác minh lỗi và khó xử lý khiếu nại. | Yêu cầu căn cứ theo kiện trước khi ghi. Runbook quy định kênh và người tiếp nhận tra soát. |
 
 **Ví dụ mẫu (`issue_refund`, đừng chép):** tham số `amount_vnd` · WRONG · số tiền tính từ số ngày khách tự khai · LogiX mất
 tiền, hãng bị kéo theo một lỗi · hiện chỉ có trần "không vượt tổng tiền đơn" · cổng ghi so với quyền lợi tính từ DB (chặn).
@@ -208,15 +206,15 @@ Trạng thái: **Xong** (có bằng chứng) · **Chưa** · **Không áp dụng
 
 | # | Nhóm việc | Bằng chứng lấy từ đâu (đã có sẵn trong lab) | Mục cần kiểm tra | Trạng thái | Bằng chứng | PIC |
 |---|---|---|---|---|---|---|
-| 1 | Chất lượng | Report `lab10.eval` (mã lần chạy) + bảng soát lỗi (Phiếu B mục B2) | | | | |
-| 2 | Dữ liệu | Bản đồ dữ liệu (Phiếu B mục B3, câu 2.3): trường nào là nguồn sự thật, trường nào là bản sao | | | | |
-| 3 | Bảo mật | Một vòng HAZOP với guideword PERTURBED (Phiếu B mục B4): chữ nào đi vào model mà không do LogiX viết | | | | |
-| 4 | Quyền hạn | `config/switches.json` + guard trước lệnh ghi; thẻ S2, S8 có thêm mục mức kiểm soát (Phiếu C mục C3) | | | | |
-| 5 | Hiệu năng, hạ tầng | Đội tự ước tính; HAZOP guideword INCAPABLE: LLM không trả lời thì sao; số người duyệt và số ca mỗi giờ | | | | |
-| 6 | Chi phí | Khối "kinh doanh và vận hành" của report: chi phí mỗi ticket so với làm tay, ROI, tiền LLM ticket đắt nhất; `config/operating_gates.json` mục `business` | | | | |
-| 7 | Vận hành | Runbook (Phiếu B mục B7.5–B7.6) + `config/operating_gates.json` mục `operations` (PIC, người duyệt, số người trực, điều kiện dừng, kênh báo tin) + metric trong `monitors.py` | | | | |
-| 8 | Con người, pháp lý | Bên thứ ba (hãng, tài xế, shop, người nhận quà, người đứng tên duyệt); `config/operating_gates.json` mục `legal`; thẻ S6, S7, S8 có mục riêng ở Phiếu C mục C3 | | | | |
-| 9 | Quyết định | Câu tiêu chí (Phiếu A mục A4) + hash Bản tiêu chí đã ký + quyết định Gate 1 (Phiếu B mục B8, Phiếu C mục C12) | | | | |
+| 1 | Chất lượng | Report `lab10.eval` (mã lần chạy) + bảng soát lỗi (Phiếu B mục B2) | So `pass_rate`, `pass_k` và các lỗi đã phân loại. | | | Nguyễn Đức Nhật |
+| 2 | Dữ liệu | Bản đồ dữ liệu (Phiếu B mục B3, câu 2.3): trường nào là nguồn sự thật, trường nào là bản sao | Đối chiếu tracking, chính sách đang hiệu lực và sổ cái. | | | Hồ Trọng Nghĩa |
+| 3 | Bảo mật | Một vòng HAZOP với guideword PERTURBED (Phiếu B mục B4): chữ nào đi vào model mà không do LogiX viết | Xác định đầu vào do khách nhập và dữ liệu đi ra ngoài. | | | Phạm Đăng Quang |
+| 4 | Quyền hạn | `config/switches.json` + guard trước lệnh ghi; thẻ S2, S8 có thêm mục mức kiểm soát (Phiếu C mục C3) | Thao tác ghi đúng đối tượng và có phê duyệt khi cần. | | | Phạm Đăng Quang |
+| 5 | Hiệu năng, hạ tầng | Đội tự ước tính; HAZOP guideword INCAPABLE: LLM không trả lời thì sao; số người duyệt và số ca mỗi giờ | Kiểm khả năng chuyển người và công suất theo ca khi model lỗi. | | | Nguyễn Đức Mạnh |
+| 6 | Chi phí | Khối "kinh doanh và vận hành" của report: chi phí mỗi ticket so với làm tay, ROI, tiền LLM ticket đắt nhất; `config/operating_gates.json` mục `business` | So chi phí và ROI với ngưỡng đã ký, đọc thêm phân khúc theo kho. | | | Hồ Trọng Nghĩa |
+| 7 | Vận hành | Runbook (Phiếu B mục B7.5–B7.6) + `config/operating_gates.json` mục `operations` (PIC, người duyệt, số người trực, điều kiện dừng, kênh báo tin) + metric trong `monitors.py` | Kiểm hàng chờ, người trực, cảnh báo và thời hạn dừng. | | | Nguyễn Đức Mạnh |
+| 8 | Con người, pháp lý | Bên thứ ba (hãng, tài xế, shop, người nhận quà, người đứng tên duyệt); `config/operating_gates.json` mục `legal`; thẻ S6, S7, S8 có mục riêng ở Phiếu C mục C3 | Đối chiếu trường gửi hãng, căn cứ ghi lỗi và kênh tiếp nhận khiếu nại. | | | Nguyễn Đức Mạnh |
+| 9 | Quyết định | Câu tiêu chí (Phiếu A mục A4) + hash Bản tiêu chí đã ký + quyết định Gate 1 (Phiếu B mục B8, Phiếu C mục C12) | So quyết định với quy tắc đã ký và mã report. | | | Hồ Trọng Nghĩa |
 
 Ô "Chưa" có rủi ro cao → chuyển thành một dòng Risk register (Phiếu C mục C10).
 
@@ -284,8 +282,8 @@ python3 -m unittest discover -s tests
 Bàn đang chỉnh cổng tới khi 22 ticket bộ nền xanh hết. Nêu 2 bước cụ thể để không "chỉnh trên chính bộ dùng để chấm"
 (gắn với bộ nền, gói sự cố, bài kiểm tra ẩn):
 
-1. …
-2. …
+1. Dùng bộ nền và ticket tự soạn để phát triển cổng dựa trên quy tắc nghiệp vụ. So kết quả của cùng cặp ticket–seed trước và sau mỗi thay đổi để giữ ca vốn đúng.
+2. Chốt cổng vòng 1 trước khi Coach giao thẻ. Ghi riêng kết quả trên thẻ được giao trước và sau khi sửa. Dành bộ ẩn cho giảng viên kiểm khả năng áp dụng với đơn, khách, cách viết và ngày khác.
 
 ### B7.3 · Câu 2.8 · Một behavioral test
 
