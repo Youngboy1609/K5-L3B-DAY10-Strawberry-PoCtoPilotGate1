@@ -273,9 +273,9 @@ python3 -m unittest discover -s tests
 
 | # | Cổng (hàm và nhánh, ví dụ `write_gate` khi `tool == "issue_refund"`) | Ứng với dòng nào ở B6 / B4 | Chặn điều gì, dựa vào nguồn sự thật nào | Mã lần chạy `base · after` | Ca đang đúng nào bị hỏng? (phải là "không") |
 |---|---|---|---|---|---|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
+| 1 | `pre_guard` · chọn phiên bản chính sách | B4 · Phiên bản chính sách / INVALID | Chọn theo ngày hiệu lực và ngày đánh giá. Chuyển người nếu không có bản hiệu lực. | `R-base-before-20261119-152741-f6a302` · `R-base-after-20261119-153900-7fabcf` | Không trên bộ nền. |
+| 2 | `write_gate` · `issue_refund` | B4 · Ví dụ `amount_vnd` / WRONG | Tính lại quyền lợi từ tracking và chính sách; chặn ca không đủ điều kiện và chuyển người nếu số tiền đề xuất vượt quyền lợi. Tra sổ cái để bỏ lệnh ghi lặp của cùng ticket và đơn. | `R-base-before-20261119-152741-f6a302` · `R-base-after-20261119-153900-7fabcf` | Không trên bộ nền. `T-002@55` từ hoàn sai 20.000đ thành từ chối. |
+| 3 | `write_gate` · `file_carrier_fault` | B4 · `parcel_id` và `carrier_id` / WRONG; `delay_cause` / INCOMPLETE | Đối chiếu đúng kiện, hãng, tài xế, ngày trễ và nguyên nhân với tracking và chính sách. Bỏ lệnh thiếu căn cứ; sửa tham số sai khi tracking đủ căn cứ. | `R-base-before-20261119-152741-f6a302` · `R-base-after-20261119-153900-7fabcf` | Không trên bộ nền. Lỗi hãng oan giảm từ 1 xuống 0 cùng với cổng hoàn tiền. |
 
 ### B7.2 · Câu 2.7 · Hai bước tránh rò rỉ dữ liệu
 
