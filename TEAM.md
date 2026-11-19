@@ -44,9 +44,20 @@ Phụ trách `lab10/guards.py` và B7.1. Triển khai 2–3 cổng phòng ngừa
 
 ### Đóng góp cụ thể
 
+- Triển khai ba cổng vòng 1: chọn chính sách theo ngày hiệu lực, xác minh quyền hoàn và ngăn ghi lặp, xác minh căn cứ và đúng kiện trước khi ghi lỗi hãng.
+- Điền Phiếu B mục B7.1 và đối chiếu trace `T-002@55` trước và sau khi thêm cổng.
+- Dùng Codex để hỗ trợ sửa `lab10/guards.py`, chạy kiểm thử và soạn phần bằng chứng trong phiếu.
+
 ### Bằng chứng
 
+- PR #1, nhánh `quang/round1-guards`.
+- Bộ nền trước cổng: `R-base-before-20261119-152741-f6a302`. Sau cổng: `R-base-after-20261119-153900-7fabcf`.
+- Số lượt đúng tăng từ 109/110 lên 110/110. Hoàn sai giảm từ 20.000đ xuống 0đ, lỗi hãng oan giảm từ 1 xuống 0. Bộ unit test đạt 13/13.
+- C7 và bằng chứng bonus cần report từ thẻ chính thức sau khi nhóm chốt vòng 1.
+
 ### Exit ticket
+
+- Bản nháp để Quang xác nhận: Học được cách dùng tracking ở bước ghi để chặn một đề xuất dựa trên số ngày khách tự khai. Còn chưa chắc cách xác định đúng kiện khi đơn có nhiều kiện mà ticket thiếu mã kiện.
 
 ## NguyenDucManh-2A202603731
 

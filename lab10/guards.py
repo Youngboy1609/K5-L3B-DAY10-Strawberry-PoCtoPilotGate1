@@ -27,16 +27,55 @@ ctx.gates    config cổng của bàn (config/operating_gates.json), chỉ đọ
 ctx.events   trace tới thời điểm này;  ctx.log("ten_su_kien", ...) ghi thêm sự kiện guard vào trace
 lab10.helpers: db_delay_days, ticket_parcel, effective_policy, entitlement_vnd, carrier_at_fault, digits
 
-Mặc định dưới đây cho qua tất cả (= mốc base).
+Mốc base dùng cổng mặc định cho qua trong lab10/_noop_guards.py.
 """
-from . import helpers as H  # noqa: F401
+from . import helpers as H
 from .tools import Verdict
 
 
 def pre_guard(ctx):
-    return Verdict.allow()
+    policy = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
+    if policy is None:
+        return Verdict.escalate("Không tìm thấy chính sách hoàn tiền có hiệu lực")
+    return Verdict.allow(policy_id=policy["policy_id"])
 
 
 def write_gate(ctx, action):
-    # action = {"tool": "issue_refund", "ticket_id":..., "order_id":..., "amount_vnd":..., "payer":..., ...}
+    tool = action["tool"]
+    if tool not in ("issue_refund", "file_carrier_fault"):
+        return Verdict.allow()
+
+    order = ctx.tools.lookup_order(action["order_id"])
+    if not order or not order.get("parcels"):
+        return Verdict.deny("Không tìm thấy kiện hàng để xác minh lệnh ghi")
+    parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
+    requested_parcel = ctx.ticket.get("parcel_id")
+    if requested_parcel and parcel["parcel_id"] != requested_parcel:
+        return Verdict.deny("Kiện được yêu cầu không thuộc đơn")
+
+    policy = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
+    if policy is None:
+        return Verdict.deny("Không tìm thấy chính sách có hiệu lực để xác minh lệnh ghi")
+    delay = H.db_delay_days(parcel, ctx.as_of)
+
+    if tool == "issue_refund":
+        if ctx.tools.ledger_rows(ticket_id=action["ticket_id"], order_id=action["order_id"]):
+            return Verdict.deny("Ticket này đã ghi hoàn tiền cho đơn trong sổ cái")
+        entitlement = H.entitlement_vnd(policy, order, delay, parcel.get("delay_cause"))
+        if entitlement <= 0:
+            return Verdict.deny("Tracking không đủ điều kiện hoàn tiền theo chính sách")
+        if action["amount_vnd"] > entitlement:
+            return Verdict.escalate("Số tiền đề xuất vượt mức được hoàn theo tracking và chính sách")
+        return Verdict.allow()
+
+    if not H.carrier_at_fault(policy, parcel, delay):
+        return Verdict.deny("Tracking và chính sách hiệu lực không đủ căn cứ ghi lỗi hãng")
+    facts = {
+        "parcel_id": parcel["parcel_id"],
+        "carrier_id": parcel["carrier_id"],
+        "driver_id": parcel.get("driver_id"),
+        "delay_days": delay,
+    }
+    if any(action.get(key) != value for key, value in facts.items()):
+        return Verdict.modify("Dùng kiện, hãng, tài xế và độ trễ từ tracking", **facts)
     return Verdict.allow()
