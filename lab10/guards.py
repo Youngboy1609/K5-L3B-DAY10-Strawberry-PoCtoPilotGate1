@@ -40,6 +40,30 @@ def pre_guard(ctx):
     return Verdict.allow(policy_id=policy["policy_id"])
 
 
+def _valid_refund_approval(ctx, action, customer_id):
+    approval_id = action["approval_id"]
+    eligible = ctx.tools.lookup_approvals(
+        approval_id=approval_id,
+        order_id=action["order_id"],
+        ticket_id=action["ticket_id"],
+        customer_id=customer_id,
+        status="valid",
+    )
+    if len(eligible) != 1 or ctx.tools.ledger_rows(approval_id=approval_id):
+        return False
+    approval = eligible[0]
+    approver = (ctx.gates or {}).get("operations", {}).get("approver_id")
+    if not approval.get("approver_id") or (approver and approval["approver_id"] != approver):
+        return False
+    limit = approval.get("max_vnd")
+    if not isinstance(limit, int) or action["amount_vnd"] > limit:
+        return False
+    try:
+        return H.d(approval.get("expires_at")) >= H.d(ctx.as_of)
+    except (TypeError, ValueError):
+        return False
+
+
 def write_gate(ctx, action):
     tool = action["tool"]
     if tool not in ("issue_refund", "file_carrier_fault"):
@@ -64,8 +88,29 @@ def write_gate(ctx, action):
         entitlement = H.entitlement_vnd(policy, order, delay, parcel.get("delay_cause"))
         if entitlement <= 0:
             return Verdict.deny("Tracking không đủ điều kiện hoàn tiền theo chính sách")
+        if action.get("payer") != "LOGIX":
+            return Verdict.escalate("Khoản hoàn giao trễ cần LogiX chịu phí")
         if action["amount_vnd"] > entitlement:
             return Verdict.escalate("Số tiền đề xuất vượt mức được hoàn theo tracking và chính sách")
+        if action.get("approval_id"):
+            if not _valid_refund_approval(ctx, action, order["customer_id"]):
+                return Verdict.escalate("Phê duyệt hoàn tiền không hợp lệ cho giao dịch này")
+            return Verdict.allow()
+        if action["amount_vnd"] > policy["auto_limit_vnd"]:
+            return Verdict.escalate("Khoản hoàn vượt hạn mức tự động, cần phê duyệt")
+
+        cap = ctx.tools.ops_limits().get("max_auto_refund_per_customer_per_day_vnd")
+        if cap is not None:
+            # Like the host's daily cap, exclude the historical seed prefix from today's ledger.
+            today = ctx.tools.ledger_rows()[ctx.tools._w.seed_rows:]
+            already_paid = sum(
+                row["amount_vnd"] for row in today
+                if row["customer_id"] == order["customer_id"] and not row.get("approval_id")
+            )
+            if already_paid + action["amount_vnd"] > cap:
+                ctx.log("customer_refund_cap", paid_vnd=already_paid,
+                        proposed_vnd=action["amount_vnd"], cap_vnd=cap)
+                return Verdict.escalate("Khoản hoàn làm vượt trần tự động theo khách trong ngày")
         return Verdict.allow()
 
     if not H.carrier_at_fault(policy, parcel, delay):

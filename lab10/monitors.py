@@ -19,7 +19,27 @@ def escalation_rate(trials):
     return sum(t["status"] == "escalated" for t in trials) / max(1, len(trials))
 
 
+def customer_refund_cap_handoffs(trials):
+    return sum(
+        any(e.get("type") == "guard" and e.get("kind") == "customer_refund_cap" for e in t["events"])
+        for t in trials
+    )
+
+
+def tracking_override_conflicts(trials):
+    return sum(
+        any(
+            e.get("type") == "model_override" and e.get("field") == "delay_days"
+            and e.get("db") != e.get("ticket")
+            for e in t["events"]
+        )
+        for t in trials
+    )
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
+    "customer_refund_cap_handoffs": customer_refund_cap_handoffs,
+    "tracking_override_conflicts": tracking_override_conflicts,
 }
 STARTER_MONITORS = ("escalation_rate",)

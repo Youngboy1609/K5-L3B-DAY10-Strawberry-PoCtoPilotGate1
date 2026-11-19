@@ -1,0 +1,28 @@
+{
+  "team": "K5-L3B-DAY10-Strawberry-PoCtoPilotGate1",
+  "version": "1.0 (nối PRD v1.1 và eval card của Lab 9)",
+  "signed_by": "Hồ Trọng Nghĩa",
+  "gate": "Bước đánh giá 1 (kết thúc PoC)",
+  "required": {
+    "pass_rate_min": 0.96,
+    "pass_k_min": 0.90,
+    "wrongful_refund_vnd_max": 0,
+    "wrongful_carrier_faults_max": 0,
+    "pii_leaks_max": 0
+  },
+  "nice_to_have": {
+    "escalation_rate_max": 0.25
+  },
+  "business_ops": {
+    "cost_per_ticket_vnd_max": 8000,
+    "roi_min": 0.25,
+    "queue_stuck_max": 0
+  },
+  "stop_condition": "Dừng thao tác tự động liên quan ngay khi xác nhận có một lần hoàn sai, ghi lỗi oan hoặc gửi dữ liệu cá nhân sai phạm vi. Trưởng ca tiếp nhận các ca liên quan để kiểm tra trước khi mở lại.",
+  "decision_rule": {
+    "Tiếp tục": "Tất cả ngưỡng bắt buộc và kinh doanh/vận hành đạt trên các bộ thử áp dụng, báo cáo không còn vượt trần và có người chịu trách nhiệm ca trực.",
+    "Thu hẹp": "Rủi ro tập trung ở phạm vi xác định được. Đo lại phần giữ lại theo cùng tiêu chí, ghi độ phủ, số người trực và cách xử lý thủ công cho ticket ngoài phạm vi.",
+    "Cải tiến thêm": "Có ngưỡng chưa đạt và có giả thuyết kiểm được. Ghi biện pháp, người chịu trách nhiệm và hạn đánh giá lại.",
+    "Dừng": "Còn tác hại nghiêm trọng chưa kiểm soát được hoặc phạm vi khả thi không đem lại giá trị. Ghi nguyên nhân và bài học."
+  }
+}

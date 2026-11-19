@@ -6,12 +6,12 @@
     "NguyenDucManh-2A202603731",
     "NguyenDucNhat-2A202603812"
   ],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "incident": "S2",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Sổ cái và trạng thái phê duyệt được đồng bộ trước khi kiểm trần, dù giao dịch thật có thể đến đồng thời hoặc xuất hiện qua kênh ghi khác.",
+    "reduce_or_prevent": "Cổng ngăn các khoản sai bên chịu phí, thiếu quyền duyệt và vượt trần tự động đi qua luồng ghi mô phỏng, với điều kiện dữ kiện và sổ cái đầu vào đúng.",
+    "measure_in_pilot": "Trong pilot thật, đo lại độ trễ đồng bộ sổ, khoản ghi đồng thời, số ca chuyển duyệt và thời gian chờ tại giờ cao điểm."
   }
 }
